@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Evony Prestige Tracker
+</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>
+⚔️ Evony Prestige Tracker
+</h1>
+
+</header>
+
+
+
+
+
+<section class="dashboard">
+
+
+<div class="card">
+
+<h3>
+Current Prestige
+</h3>
+
+<p id="currentPrestige">
+0
+</p>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+Prestige Goal
+</h3>
+
+<input
+id="prestigeGoal"
+type="number"
+value="0"
+>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+Monster Prestige
+</h3>
+
+<p id="monsterPrestige">
+0
+</p>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+Stamina Used
+</h3>
+
+<p id="staminaUsed">
+0
+</p>
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section class="tracker">
+
+
+<h2>
+🔎 Add Monster
+</h2>
+
+
+
+<div class="autocomplete">
+
+
+<input
+
+id="monsterSearch"
+
+placeholder="Search monster..."
+
+autocomplete="off"
+
+>
+
+
+<div id="autocompleteList">
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="buttons">
+
+
+<button onclick="addKills(1)">
++1 Kill
+</button>
+
+
+
+<button onclick="addKills(6)">
++6 Kills
+</button>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section class="stamina-panel">
+
+
+<h2>
+⚡ March Setup
+</h2>
+
+
+
+<div class="general-grid">
+
+
+
+<div class="general-card">
+
+<label>
+Lead General
+</label>
+
+
+<select id="leadGeneral">
+
+<option value="none">
+None
+</option>
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+<div class="general-card">
+
+<label>
+Assistant General
+</label>
+
+
+<select id="assistantGeneral">
+
+<option value="none">
+None
+</option>
+
+</select>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="reduction-display">
+
+
+
+<p>
+Lead:
+<strong id="displayLead">
+None
+</strong>
+</p>
+
+
+
+
+<p>
+Assistant:
+<strong id="displayAssistant">
+None
+</strong>
+</p>
+
+
+
+
+<p>
+Reduction:
+<strong id="staminaReduction">
+0%
+</strong>
+</p>
+
+
+
+
+<p>
+Monster Cost:
+<strong id="baseStamina">
+0
+</strong>
+</p>
+
+
+
+
+<p>
+Final Cost:
+<strong id="finalStamina">
+0
+</strong>
+</p>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section>
+
+
+<h2>
+Progress
+</h2>
+
+
+
+<div class="progress">
+
+
+<div id="progressBar">
+
+0%
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section>
+
+
+<h2>
+⚔️ Monster Kill Ledger
+</h2>
+
+
+
+<div class="table-controls">
+
+
+<button onclick="addEmptyRow()">
++ Add Row
+</button>
+
+
+
+<button onclick="clearLog()">
+🗑 Clear All
+</button>
+
+
+
+<button onclick="exportCSV()">
+Export CSV
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<table>
+
+
+<thead>
+
+
+<tr>
+
+<th>
+Monster
+</th>
+
+
+<th>
+Kills
+</th>
+
+
+<th>
+Prestige
+</th>
+
+
+<th>
+Stamina
+</th>
+
+
+<th>
+Delete
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody id="logTable">
+
+</tbody>
+
+
+</table>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section class="export-area">
+
+
+<button onclick="exportJSON()">
+Backup Save
+</button>
+
+
+<button onclick="copyTable()">
+Copy Table
+</button>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<script src="monsters.js"></script>
+
+<script src="generals.js"></script>
+
+<script src="app.js"></script>
+
+
+
+</body>
+
+</html>
