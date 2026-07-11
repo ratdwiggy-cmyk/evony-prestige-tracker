@@ -230,7 +230,6 @@ return 0;
 
 
 
-
 if(
 lead &&
 assist &&
@@ -238,7 +237,6 @@ lead.id===assist.id
 )
 
 return -1;
-
 
 
 
@@ -263,7 +261,6 @@ assist?.id==="greene"
 )
 
 return -1;
-
 
 
 
@@ -327,27 +324,12 @@ assist ? assist.name : "None";
 
 
 
-
-
-if(reduction<0){
-
-
 staminaReduction.textContent =
-"Invalid";
-
-
-}
-
-else{
-
-
-staminaReduction.textContent =
+reduction < 0
+?
+"Invalid"
+:
 reduction+"%";
-
-
-}
-
-
 
 
 
@@ -398,16 +380,9 @@ finalStamina.textContent="0";
 }
 
 
-
-}
-
-
-
-
-
-/*
+}/*
 ====================================
-MONSTER SEARCH TOP BOX
+TOP MONSTER SEARCH
 ====================================
 */
 
@@ -438,7 +413,6 @@ m.name
 
 
 }
-
 
 
 
@@ -503,8 +477,6 @@ autocompleteList.appendChild(item);
 
 
 
-
-
 function chooseMonster(index){
 
 
@@ -556,7 +528,6 @@ renderSuggestions();
 
 
 
-
 searchBox.addEventListener(
 "keydown",
 e=>{
@@ -565,7 +536,6 @@ e=>{
 if(!suggestions.length)
 
 return;
-
 
 
 
@@ -580,12 +550,9 @@ activeSuggestion++;
 
 
 
-if(
-activeSuggestion>=suggestions.length
-)
+if(activeSuggestion>=suggestions.length)
 
 activeSuggestion=0;
-
 
 
 }
@@ -606,9 +573,7 @@ activeSuggestion--;
 
 if(activeSuggestion<0)
 
-activeSuggestion =
-suggestions.length-1;
-
+activeSuggestion=suggestions.length-1;
 
 
 }
@@ -649,7 +614,7 @@ chooseMonster(activeSuggestion);
 
 /*
 ====================================
-ADD / EDIT LOG
+LEDGER MANAGEMENT
 ====================================
 */
 
@@ -669,6 +634,7 @@ return;
 
 
 }
+
 
 
 
@@ -719,7 +685,6 @@ update();
 
 
 
-
 function addEmptyRow(){
 
 
@@ -739,7 +704,6 @@ update();
 
 
 }
-
 
 
 
@@ -769,16 +733,12 @@ update();
 
 
 
-
 function clearLog(){
 
 
-if(
-confirm(
+if(confirm(
 "Delete all tracked monsters?"
-)
-
-){
+)){
 
 
 log=[];
@@ -794,7 +754,6 @@ update();
 
 
 }
-
 
 
 
@@ -821,14 +780,6 @@ JSON.stringify(log)
 
 
 
-
-/*
-====================================
-TABLE AUTOCOMPLETE
-====================================
-*/
-
-
 function updateMonsterName(index,value){
 
 
@@ -844,6 +795,16 @@ if(monster){
 
 log[index].name =
 monster.name;
+
+
+}
+
+
+else{
+
+
+log[index].name =
+"";
 
 
 }
@@ -865,9 +826,45 @@ update();
 
 
 
+function updateKillAmount(index,value){
+
+
+let amount =
+Number(value);
+
+
+
+if(
+isNaN(amount)
+||
+amount<0
+)
+
+amount=0;
+
+
+
+log[index].kills =
+Math.floor(amount);
+
+
+
+save();
+
+
+update();
+
+
+}
+
+
+
+
+
+
+
 
 function createTableAutocomplete(input,index){
-
 
 
 let list =
@@ -920,10 +917,8 @@ let item =
 document.createElement("div");
 
 
-
 item.className =
 "autocomplete-item";
-
 
 
 item.textContent =
@@ -935,8 +930,7 @@ item.onclick =
 ()=>{
 
 
-input.value =
-m.name;
+input.value=m.name;
 
 
 list.innerHTML="";
@@ -968,56 +962,9 @@ list.appendChild(item);
 });
 
 
-
-
-}
-
-
-
-
-
-
-
-
-
-function updateKillAmount(index,value){
-
-
-let amount =
-Number(value);
-
-
-
-if(amount<0)
-
-amount=0;
-
-
-
-log[index].kills =
-amount;
-
-
-save();
-
-
-update();
-
-
-}
-
-
-
-
-
-
-
-
-
-
-/*
+}/*
 ====================================
-DISPLAY TABLE
+BUILD TABLE
 ====================================
 */
 
@@ -1035,6 +982,7 @@ table.innerHTML="";
 
 
 
+
 log.forEach(
 (entry,index)=>{
 
@@ -1044,13 +992,39 @@ document.createElement("tr");
 
 
 
+let monster =
+monsters.find(
+m=>m.name===entry.name
+);
+
+
+
+
+
+if(
+!monster
+&&
+entry.name!==""
+)
+
+row.classList.add(
+"invalid-row"
+);
+
+
+
+
+
+
 
 let monsterCell =
 document.createElement("td");
 
 
+
 let monsterInput =
 document.createElement("input");
+
 
 
 monsterInput.className =
@@ -1061,9 +1035,16 @@ monsterInput.value =
 entry.name;
 
 
+
+monsterInput.placeholder =
+"Search monster";
+
+
+
 monsterCell.appendChild(
 monsterInput
 );
+
 
 
 createTableAutocomplete(
@@ -1076,18 +1057,18 @@ index
 
 
 
-
 let killCell =
 document.createElement("td");
-
 
 
 let killInput =
 document.createElement("input");
 
 
+
 killInput.type="number";
 
+killInput.min=0;
 
 killInput.className =
 "kill-number";
@@ -1095,9 +1076,6 @@ killInput.className =
 
 killInput.value =
 entry.kills;
-
-
-killInput.min=0;
 
 
 
@@ -1122,16 +1100,6 @@ killInput
 
 
 
-
-
-let monster =
-monsters.find(
-m=>m.name===entry.name
-);
-
-
-
-
 let prestigeCell =
 document.createElement("td");
 
@@ -1141,12 +1109,10 @@ document.createElement("td");
 
 
 
-let prestige =
-0;
+let prestige=0;
 
+let stamina=0;
 
-let stamina =
-0;
 
 
 
@@ -1159,35 +1125,38 @@ entry.kills;
 
 
 
+let cost =
+monster.stamina;
+
+
+
 let reduction =
 calculateReduction();
-
-
-
-stamina =
-monster.stamina *
-entry.kills;
-
 
 
 
 if(reduction>0){
 
 
-stamina =
+cost =
 Math.ceil(
 monster.stamina *
 (1-(reduction/100))
-)
-*
+);
+
+
+}
+
+
+
+stamina =
+cost *
 entry.kills;
 
 
-}
-
-
 
 }
+
 
 
 
@@ -1199,18 +1168,6 @@ prestige;
 staminaCell.textContent =
 stamina;
 
-
-
-row.appendChild(monsterCell);
-
-
-row.appendChild(killCell);
-
-
-row.appendChild(prestigeCell);
-
-
-row.appendChild(staminaCell);
 
 
 
@@ -1246,9 +1203,17 @@ deleteButton
 
 
 
+
+
+row.appendChild(monsterCell);
+
+row.appendChild(killCell);
+
+row.appendChild(prestigeCell);
+
+row.appendChild(staminaCell);
+
 row.appendChild(deleteCell);
-
-
 
 
 
@@ -1259,12 +1224,20 @@ table.appendChild(row);
 });
 
 
+
 }
+
+
+
+
+
+
+
 
 
 /*
 ====================================
-TOTALS / UPDATE
+TOTALS + STATISTICS
 ====================================
 */
 
@@ -1275,6 +1248,10 @@ function update(){
 let prestige=0;
 
 let stamina=0;
+
+let kills=0;
+
+let unique=new Set();
 
 
 
@@ -1301,12 +1278,20 @@ return;
 
 
 
+unique.add(
+monster.name
+);
+
+
+
+kills +=
+entry.kills;
+
 
 
 prestige +=
 monster.prestige *
 entry.kills;
-
 
 
 
@@ -1343,26 +1328,65 @@ entry.kills;
 
 
 
-
-document.getElementById("monsterPrestige")
+document.getElementById(
+"currentPrestige"
+)
 .textContent =
 prestige;
 
 
 
-
-document.getElementById("currentPrestige")
+document.getElementById(
+"monsterPrestige"
+)
 .textContent =
 prestige;
 
 
 
-
-document.getElementById("staminaUsed")
+document.getElementById(
+"staminaUsed"
+)
 .textContent =
 stamina;
 
 
+
+document.getElementById(
+"uniqueMonsters"
+)
+.textContent =
+unique.size;
+
+
+
+document.getElementById(
+"totalKills"
+)
+.textContent =
+kills;
+
+
+
+document.getElementById(
+"totalPrestige"
+)
+.textContent =
+prestige;
+
+
+
+document.getElementById(
+"averagePrestige"
+)
+.textContent =
+kills===0
+?
+0
+:
+Math.floor(
+prestige/kills
+);
 
 
 
@@ -1387,13 +1411,17 @@ Math.min(
 
 
 
-document.getElementById("progressBar")
+document.getElementById(
+"progressBar"
+)
 .style.width =
 percent+"%";
 
 
 
-document.getElementById("progressBar")
+document.getElementById(
+"progressBar"
+)
 .textContent =
 percent.toFixed(1)+"%";
 
@@ -1401,8 +1429,8 @@ percent.toFixed(1)+"%";
 
 
 
-
 buildTable();
+
 
 
 }
@@ -1417,7 +1445,7 @@ buildTable();
 
 /*
 ====================================
-EXPORT FUNCTIONS
+EXPORT
 ====================================
 */
 
@@ -1427,13 +1455,6 @@ function exportCSV(){
 
 let csv =
 "Monster,Kills,Prestige,Stamina\n";
-
-
-
-let reduction =
-calculateReduction();
-
-
 
 
 
@@ -1453,35 +1474,14 @@ return;
 
 
 
-
-
 let prestige =
 monster.prestige *
 entry.kills;
 
 
 
-let cost =
-monster.stamina;
-
-
-
-if(reduction>0){
-
-
-cost =
-Math.ceil(
-monster.stamina *
-(1-(reduction/100))
-);
-
-
-}
-
-
-
 let stamina =
-cost *
+monster.stamina *
 entry.kills;
 
 
@@ -1492,9 +1492,6 @@ csv +=
 
 
 });
-
-
-
 
 
 
@@ -1513,7 +1510,6 @@ let link =
 document.createElement("a");
 
 
-
 link.href =
 URL.createObjectURL(blob);
 
@@ -1527,8 +1523,8 @@ link.download =
 link.click();
 
 
-}
 
+}
 
 
 
@@ -1560,7 +1556,6 @@ let link =
 document.createElement("a");
 
 
-
 link.href =
 URL.createObjectURL(blob);
 
@@ -1570,8 +1565,8 @@ link.download =
 "Evony_Backup.json";
 
 
-
 link.click();
+
 
 
 }
@@ -1592,13 +1587,6 @@ let text =
 
 
 
-let reduction =
-calculateReduction();
-
-
-
-
-
 log.forEach(entry=>{
 
 
@@ -1615,41 +1603,8 @@ return;
 
 
 
-
-
-let prestige =
-monster.prestige *
-entry.kills;
-
-
-
-let cost =
-monster.stamina;
-
-
-
-if(reduction>0){
-
-
-cost =
-Math.ceil(
-monster.stamina *
-(1-(reduction/100))
-);
-
-
-}
-
-
-
-let stamina =
-cost *
-entry.kills;
-
-
-
 text +=
-`${monster.name}\t${entry.kills}\t${prestige}\t${stamina}\n`;
+`${monster.name}\t${entry.kills}\t${monster.prestige*entry.kills}\t${monster.stamina*entry.kills}\n`;
 
 
 
@@ -1657,10 +1612,7 @@ text +=
 
 
 
-
-
 navigator.clipboard.writeText(text);
-
 
 
 alert(
@@ -1689,18 +1641,13 @@ leadGeneral.addEventListener(
 "change",
 ()=>{
 
-
 populateGeneralMenus();
-
 
 updateReduction();
 
-
 update();
 
-
 });
-
 
 
 
@@ -1708,15 +1655,11 @@ assistantGeneral.addEventListener(
 "change",
 ()=>{
 
-
 populateGeneralMenus();
-
 
 updateReduction();
 
-
 update();
-
 
 });
 
@@ -1747,6 +1690,7 @@ goal
 update();
 
 
+
 });
 
 
@@ -1766,8 +1710,6 @@ START
 
 populateGeneralMenus();
 
-
 updateReduction();
-
 
 update();
