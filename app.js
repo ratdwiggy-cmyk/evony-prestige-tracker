@@ -14,6 +14,8 @@ let suggestions = [];
 
 let activeSuggestion = -1;
 
+let currentSort = "none";
+
 
 
 const searchBox =
@@ -63,7 +65,6 @@ goal;
 
 
 
-
 /*
 ====================================
 GENERAL SYSTEM
@@ -78,6 +79,7 @@ g=>g.id===id
 );
 
 }
+
 
 
 
@@ -380,7 +382,16 @@ finalStamina.textContent="0";
 }
 
 
-}/*
+}
+
+
+
+
+
+
+
+
+/*
 ====================================
 TOP MONSTER SEARCH
 ====================================
@@ -602,17 +613,7 @@ chooseMonster(activeSuggestion);
 }
 
 
-});
-
-
-
-
-
-
-
-
-
-/*
+});/*
 ====================================
 LEDGER MANAGEMENT
 ====================================
@@ -962,7 +963,17 @@ list.appendChild(item);
 });
 
 
-}/*
+}
+
+
+
+
+
+
+
+
+
+/*
 ====================================
 BUILD TABLE
 ====================================
@@ -976,15 +987,209 @@ let table =
 document.getElementById("logTable");
 
 
-
 table.innerHTML="";
 
 
 
+let displayLog =
+log.map(
+(entry,originalIndex)=>({
+
+entry,
+originalIndex
+
+})
+);
 
 
-log.forEach(
-(entry,index)=>{
+
+
+
+if(currentSort!=="none"){
+
+
+displayLog.sort(
+(a,b)=>{
+
+
+let entryA =
+a.entry;
+
+
+let entryB =
+b.entry;
+
+
+
+let monsterA =
+monsters.find(
+m=>m.name===entryA.name
+);
+
+
+let monsterB =
+monsters.find(
+m=>m.name===entryB.name
+);
+
+
+
+
+
+if(!monsterA)
+return 1;
+
+
+if(!monsterB)
+return -1;
+
+
+
+
+
+if(currentSort==="name"){
+
+
+return entryA.name.localeCompare(
+entryB.name
+);
+
+
+}
+
+
+
+
+
+if(currentSort==="kills"){
+
+
+return entryB.kills-entryA.kills;
+
+
+}
+
+
+
+
+
+if(currentSort==="prestige"){
+
+
+return (
+monsterB.prestige *
+entryB.kills
+)
+-
+(
+monsterA.prestige *
+entryA.kills
+);
+
+
+}
+
+
+
+
+
+if(currentSort==="stamina"){
+
+
+let reduction =
+calculateReduction();
+
+
+
+let costA =
+monsterA.stamina;
+
+
+let costB =
+monsterB.stamina;
+
+
+
+
+if(reduction>0){
+
+
+costA =
+Math.ceil(
+costA*(1-reduction/100)
+);
+
+
+costB =
+Math.ceil(
+costB*(1-reduction/100)
+);
+
+
+}
+
+
+
+return (
+costB *
+entryB.kills
+)
+-
+(
+costA *
+entryA.kills
+);
+
+
+}
+
+
+
+
+
+if(currentSort==="efficiency"){
+
+
+return (
+monsterB.prestige /
+monsterB.stamina
+)
+-
+(
+monsterA.prestige /
+monsterA.stamina
+);
+
+
+}
+
+
+
+
+return 0;
+
+
+});
+
+
+}
+
+
+
+
+
+
+displayLog.forEach(
+(item)=>{
+
+
+let entry =
+item.entry;
+
+
+let index =
+item.originalIndex;
+
 
 
 let row =
@@ -1225,6 +1430,356 @@ table.appendChild(row);
 
 
 
+}/*
+====================================
+LEDGER MANAGEMENT
+====================================
+*/
+
+
+function addKills(amount){
+
+
+if(!selectedMonster){
+
+
+alert(
+"Select a monster first"
+);
+
+
+return;
+
+
+}
+
+
+
+
+let entry =
+log.find(
+x=>x.name===selectedMonster.name
+);
+
+
+
+if(!entry){
+
+
+entry={
+
+name:selectedMonster.name,
+
+kills:0
+
+};
+
+
+log.push(entry);
+
+
+}
+
+
+
+
+entry.kills += amount;
+
+
+
+save();
+
+
+update();
+
+
+}
+
+
+
+
+
+
+
+
+
+function addEmptyRow(){
+
+
+log.push({
+
+name:"",
+
+kills:0
+
+});
+
+
+save();
+
+
+update();
+
+
+}
+
+
+
+
+
+
+
+
+function deleteRow(index){
+
+
+log.splice(index,1);
+
+
+save();
+
+
+update();
+
+
+}
+
+
+
+
+
+
+
+
+function clearLog(){
+
+
+if(confirm(
+"Delete all tracked monsters?"
+)){
+
+
+log=[];
+
+
+save();
+
+
+update();
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+function save(){
+
+
+localStorage.setItem(
+"evonyLog",
+JSON.stringify(log)
+);
+
+
+}
+
+
+
+
+
+
+
+
+function updateMonsterName(index,value){
+
+
+let monster =
+monsters.find(
+m=>m.name===value
+);
+
+
+
+if(monster){
+
+
+log[index].name =
+monster.name;
+
+
+}
+
+
+else{
+
+
+log[index].name =
+"";
+
+
+}
+
+
+
+save();
+
+
+update();
+
+
+}
+
+
+
+
+
+
+
+
+function updateKillAmount(index,value){
+
+
+let amount =
+Number(value);
+
+
+
+if(
+isNaN(amount)
+||
+amount<0
+)
+
+amount=0;
+
+
+
+log[index].kills =
+Math.floor(amount);
+
+
+
+save();
+
+
+update();
+
+
+}
+
+
+
+
+
+
+
+
+function createTableAutocomplete(input,index){
+
+
+let list =
+document.createElement("div");
+
+
+list.className =
+"autocomplete-list-table";
+
+
+input.parentNode.appendChild(list);
+
+
+
+
+
+input.addEventListener(
+"input",
+()=>{
+
+
+list.innerHTML="";
+
+
+
+let text =
+input.value.toLowerCase();
+
+
+
+
+let matches =
+monsters.filter(m=>
+
+m.name
+.toLowerCase()
+.includes(text)
+
+)
+.slice(0,10);
+
+
+
+
+
+matches.forEach(m=>{
+
+
+let item =
+document.createElement("div");
+
+
+item.className =
+"autocomplete-item";
+
+
+item.textContent =
+m.name;
+
+
+
+item.onclick =
+()=>{
+
+
+input.value=m.name;
+
+
+list.innerHTML="";
+
+
+updateMonsterName(
+index,
+m.name
+);
+
+
+};
+
+
+
+item.ontouchend =
+item.onclick;
+
+
+
+list.appendChild(item);
+
+
+
+});
+
+
+
+});
+
+
 }
 
 
@@ -1236,6 +1791,463 @@ table.appendChild(row);
 
 
 /*
+====================================
+BUILD TABLE
+====================================
+*/
+
+
+function buildTable(){
+
+
+let table =
+document.getElementById("logTable");
+
+
+table.innerHTML="";
+
+
+
+let displayLog =
+log.map(
+(entry,originalIndex)=>({
+
+entry,
+originalIndex
+
+})
+);
+
+
+
+
+
+if(currentSort!=="none"){
+
+
+displayLog.sort(
+(a,b)=>{
+
+
+let entryA =
+a.entry;
+
+
+let entryB =
+b.entry;
+
+
+
+let monsterA =
+monsters.find(
+m=>m.name===entryA.name
+);
+
+
+let monsterB =
+monsters.find(
+m=>m.name===entryB.name
+);
+
+
+
+
+
+if(!monsterA)
+return 1;
+
+
+if(!monsterB)
+return -1;
+
+
+
+
+
+if(currentSort==="name"){
+
+
+return entryA.name.localeCompare(
+entryB.name
+);
+
+
+}
+
+
+
+
+
+if(currentSort==="kills"){
+
+
+return entryB.kills-entryA.kills;
+
+
+}
+
+
+
+
+
+if(currentSort==="prestige"){
+
+
+return (
+monsterB.prestige *
+entryB.kills
+)
+-
+(
+monsterA.prestige *
+entryA.kills
+);
+
+
+}
+
+
+
+
+
+if(currentSort==="stamina"){
+
+
+let reduction =
+calculateReduction();
+
+
+
+let costA =
+monsterA.stamina;
+
+
+let costB =
+monsterB.stamina;
+
+
+
+
+if(reduction>0){
+
+
+costA =
+Math.ceil(
+costA*(1-reduction/100)
+);
+
+
+costB =
+Math.ceil(
+costB*(1-reduction/100)
+);
+
+
+}
+
+
+
+return (
+costB *
+entryB.kills
+)
+-
+(
+costA *
+entryA.kills
+);
+
+
+}
+
+
+
+
+
+if(currentSort==="efficiency"){
+
+
+return (
+monsterB.prestige /
+monsterB.stamina
+)
+-
+(
+monsterA.prestige /
+monsterA.stamina
+);
+
+
+}
+
+
+
+
+return 0;
+
+
+});
+
+
+}
+
+
+
+
+
+
+displayLog.forEach(
+(item)=>{
+
+
+let entry =
+item.entry;
+
+
+let index =
+item.originalIndex;
+
+
+
+let row =
+document.createElement("tr");
+
+
+
+let monster =
+monsters.find(
+m=>m.name===entry.name
+);
+
+
+
+
+
+if(
+!monster
+&&
+entry.name!==""
+)
+
+row.classList.add(
+"invalid-row"
+);
+
+
+
+
+
+
+
+let monsterCell =
+document.createElement("td");
+
+
+
+let monsterInput =
+document.createElement("input");
+
+
+
+monsterInput.className =
+"kill-monster-input";
+
+
+monsterInput.value =
+entry.name;
+
+
+
+monsterInput.placeholder =
+"Search monster";
+
+
+
+monsterCell.appendChild(
+monsterInput
+);
+
+
+
+createTableAutocomplete(
+monsterInput,
+index
+);
+
+
+
+
+
+
+let killCell =
+document.createElement("td");
+
+
+let killInput =
+document.createElement("input");
+
+
+
+killInput.type="number";
+
+killInput.min=0;
+
+killInput.className =
+"kill-number";
+
+
+killInput.value =
+entry.kills;
+
+
+
+killInput.onchange =
+()=>{
+
+updateKillAmount(
+index,
+killInput.value
+);
+
+};
+
+
+
+killCell.appendChild(
+killInput
+);
+
+
+
+
+
+
+let prestigeCell =
+document.createElement("td");
+
+
+let staminaCell =
+document.createElement("td");
+
+
+
+let prestige=0;
+
+let stamina=0;
+
+
+
+
+if(monster){
+
+
+prestige =
+monster.prestige *
+entry.kills;
+
+
+
+let cost =
+monster.stamina;
+
+
+
+let reduction =
+calculateReduction();
+
+
+
+if(reduction>0){
+
+
+cost =
+Math.ceil(
+monster.stamina *
+(1-(reduction/100))
+);
+
+
+}
+
+
+
+stamina =
+cost *
+entry.kills;
+
+
+
+}
+
+
+
+
+prestigeCell.textContent =
+prestige;
+
+
+
+staminaCell.textContent =
+stamina;
+
+
+
+
+
+
+let deleteCell =
+document.createElement("td");
+
+
+let deleteButton =
+document.createElement("button");
+
+
+
+deleteButton.textContent =
+"🗑";
+
+
+
+deleteButton.className =
+"delete-button";
+
+
+
+deleteButton.onclick =
+()=>deleteRow(index);
+
+
+
+deleteCell.appendChild(
+deleteButton
+);
+
+
+
+
+
+row.appendChild(monsterCell);
+
+row.appendChild(killCell);
+
+row.appendChild(prestigeCell);
+
+row.appendChild(staminaCell);
+
+row.appendChild(deleteCell);
+
+
+
+table.appendChild(row);
+
+
+
+});
+
+
+
+}/*
 ====================================
 TOTALS + STATISTICS
 ====================================
@@ -1620,17 +2632,7 @@ alert(
 );
 
 
-}
-
-
-
-
-
-
-
-
-
-/*
+}/*
 ====================================
 EVENTS
 ====================================
@@ -1695,6 +2697,23 @@ update();
 
 
 
+
+
+
+function changeSort(){
+
+
+currentSort =
+document.getElementById(
+"sortSelect"
+)
+.value;
+
+
+buildTable();
+
+
+}
 
 
 

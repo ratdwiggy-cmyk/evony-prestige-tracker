@@ -340,16 +340,44 @@ Progress
 </button>
 
 
-
 <button onclick="clearLog()">
 🗑 Clear All
 </button>
 
 
-
 <button onclick="exportCSV()">
 Export CSV
 </button>
+
+
+
+<select id="sortSelect" onchange="changeSort()">
+
+<option value="none">
+Sort Ledger
+</option>
+
+<option value="name">
+Monster A-Z
+</option>
+
+<option value="kills">
+Most Kills
+</option>
+
+<option value="prestige">
+Most Prestige
+</option>
+
+<option value="stamina">
+Most Stamina
+</option>
+
+<option value="efficiency">
+Best Prestige/Stamina
+</option>
+
+</select>
 
 
 </div>

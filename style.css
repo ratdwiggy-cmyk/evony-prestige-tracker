@@ -34,6 +34,7 @@ color:#ffd700;
 .dashboard{
 
 display:grid;
+
 grid-template-columns:
 repeat(auto-fit,minmax(200px,1fr));
 
@@ -270,6 +271,34 @@ line-height:30px;
 
 
 
+.table-controls{
+
+display:flex;
+
+flex-wrap:wrap;
+
+align-items:center;
+
+gap:10px;
+
+margin-bottom:15px;
+
+}
+
+
+
+
+
+.table-controls select{
+
+cursor:pointer;
+
+}
+
+
+
+
+
 table{
 
 width:100%;
@@ -384,10 +413,9 @@ gap:15px;
 
 
 
-.table-controls,
 .export-area{
 
-margin-top:15px;
+margin-top:20px;
 
 text-align:center;
 
@@ -403,6 +431,14 @@ text-align:center;
 body{
 
 padding:10px;
+
+}
+
+
+
+.table-controls{
+
+flex-direction:column;
 
 }
 
@@ -433,13 +469,13 @@ width:120px;
 
 
 
-button{
+button,
+select{
 
 width:100%;
 
-margin:5px 0;
-
 }
+
 
 
 }
